@@ -89,6 +89,11 @@ class User implements UserInterface
      */
     private $photos;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $apiToken;
+
     public function __construct()
     {
         $this->photos = new ArrayCollection();
@@ -282,6 +287,18 @@ class User implements UserInterface
                 $photo->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getApiToken(): ?string
+    {
+        return $this->apiToken;
+    }
+
+    public function setApiToken(?string $apiToken): self
+    {
+        $this->apiToken = $apiToken;
 
         return $this;
     }

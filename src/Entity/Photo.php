@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=PhotoRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Photo
 {
@@ -41,6 +42,22 @@ class Photo
      * @ORM\Column(type="datetime_immutable")
      */
     private $updatedAt;
+
+    /*
+    * @ORM\PrePersist
+    */
+   public function setCreatedAtValue(): void
+   {
+       $this->createdAt = new \DateTimeImmutable();
+   }
+
+    /**
+    * @ORM\PreUpdate
+    */
+   public function setUpdatedAtValue(): void
+   {
+       $this->updatedAt = new \DateTimeImmutable();
+   }
 
     public function getId(): ?int
     {

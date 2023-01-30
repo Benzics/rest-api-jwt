@@ -70,9 +70,9 @@ class User implements UserInterface
     private $lastName;
 
     /**
-     * @ORM\Column(type="boolean", options={"default": true})
+     * @ORM\Column(type="boolean")
      */
-    private $active;
+    private $active = true;
 
     /**
      * @ORM\Column(type="datetime_immutable")

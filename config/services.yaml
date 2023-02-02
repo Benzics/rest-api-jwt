@@ -28,3 +28,15 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    #Our S3 bucket configurations
+    storage:
+        class: App\Services\AmazonS3Service
+        arguments:
+            $bucket : "cw-recruitment-tests"
+            $s3arguments:
+                credentials:
+                    key: "%env(AMAZON_KEY)%"
+                    secret: "%env(AMAZON_SECRET)%"
+                region: "eu-west-1"
+                version: "2006-03-01"

@@ -11,25 +11,30 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use App\Services\AmazonS3Service;
+use Psr\Container\ContainerInterface;
+use App\Entity\Photo;
+
 class UserController extends AbstractController
 {
     private $userRepository;
+    public $container;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $userRepository, ContainerInterface $container)
     {
         $this->userRepository = $userRepository;
+        $this->container = $container;
     }
 
     /**
-     * @Route("/api/users/register", name="user_register", methods={"POST"})
+     * @Route("/api/users/register", name="user_register", methods={"POST", "GET"})
      */
     public function register(
         Request $request,
         ValidatorInterface $validator,
         UserPasswordEncoderInterface $encoder,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        AmazonS3Service $amazonS3Service
     ): JsonResponse
     {
         $email = (string) $request->get('email');
@@ -77,6 +82,28 @@ class UserController extends AbstractController
 
         $userId = $user->getId();
 
+        // we check if this request has files then we upload to Amazon S3
+        if($request->files->get('photos')) {
+
+            // we are expecting our photos to be an array of photos
+            foreach($request->files->get('photos') as $image) {
+
+                $currentName = md5(uniqid()) . '.' . $image->guessExtension();
+                $photoUrl = $amazonS3Service->uploadFile($image, $currentName);
+
+                // after uploading image to s3 bucket, we save the file name in our database
+                $photo = new Photo();
+                $photo->setName($currentName);
+                $photo->setUrl($photoUrl);
+                $photo->setUser($user);
+
+                $entityManager->persist($photo);
+
+            }
+            
+        }
+        $entityManager->flush();
+
         $data = ['message' => 'User created successfully.', 'userId' => $userId];
         return $this->json($data);
     }
@@ -87,6 +114,18 @@ class UserController extends AbstractController
     public function details(): JsonResponse
     {
         $user = $this->getUser();
+       
+        $photosArray = [];
+
+        // we want to return all user photos as array we can easily interact with
+        foreach($user->getPhotos() as $row) {
+            $photosArray[] = [
+                'id' => $row->getId(),
+                'name' => $row->getName(),
+                'url' => $row->getUrl(),
+                'user' => $row->getUser(),
+            ];
+        }
 
         return $this->json([
             'id' => $user->getId(),
@@ -96,6 +135,7 @@ class UserController extends AbstractController
             'email' => $user->getEmail(),
             'active' => $user->getActive(),
             'avatar' => $user->getAvatar(),
+            'photos' => $photosArray,
             'createdAt' => $user->getCreatedAt(),
             'updatedAt' => $user->getUpdatedAt(),
         ]);

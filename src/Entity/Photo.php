@@ -43,7 +43,7 @@ class Photo
      */
     private $updatedAt;
 
-    /*
+    /**
     * @ORM\PrePersist
     */
    public function setCreatedAtValue(): void

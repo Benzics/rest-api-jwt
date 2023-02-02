@@ -30,7 +30,7 @@ services:
     # please note that last definitions always *replace* previous ones
 
     #Our S3 bucket configurations
-    storage:
+    stores:
         class: App\Services\AmazonS3Service
         arguments:
             $bucket : "cw-recruitment-tests"
@@ -40,3 +40,4 @@ services:
                     secret: "%env(AMAZON_SECRET)%"
                 region: "eu-west-1"
                 version: "2006-03-01"
+    App\Services\AmazonS3Service: '@stores'

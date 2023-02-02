@@ -24,7 +24,7 @@ class AmazonS3Service
      * @param string $bucket
      * @param array  $s3arguments
      */
-    public function __construct($bucket, array $s3arguments)
+    public function __construct(string $bucket, array $s3arguments)
     {
         $this->setBucket($bucket);
         $this->setClient(new S3Client($s3arguments));

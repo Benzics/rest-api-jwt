@@ -27,7 +27,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/api/users/register", name="user_register", methods={"POST", "GET"})
+     * @Route("/api/users/register", name="user_register", methods={"POST"})
      */
     public function register(
         Request $request,
@@ -101,7 +101,7 @@ class UserController extends AbstractController
 
             }
         }
-        
+
         $entityManager->flush();
 
         $data = ['message' => 'User created successfully.', 'userId' => $userId];

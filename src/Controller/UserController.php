@@ -100,8 +100,8 @@ class UserController extends AbstractController
                 $entityManager->persist($photo);
 
             }
-            
         }
+        
         $entityManager->flush();
 
         $data = ['message' => 'User created successfully.', 'userId' => $userId];

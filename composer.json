@@ -10,6 +10,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.14",
         "lexik/jwt-authentication-bundle": "^2.16",
+        "nelmio/cors-bundle": "^2.2",
         "sensio/framework-extra-bundle": "^6.2",
         "symfony/console": "4.4.*",
         "symfony/dotenv": "4.4.*",
